@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from twilio.rest import TwilioRestClient
 
+import os
 import re
 import requests
 import schedule
