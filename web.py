@@ -50,9 +50,20 @@ def subscribe():
 
 @app.route("/message/", methods=['POST'])
 def read_message():
-    resp = twiml.Response()
-    resp.message("Hello, {}. You said \"{}\"".format(request.form['From'], request.form['Body']))
-    return str(resp)
+    if request.form['Body'].lower().strip() == "meh":
+        r.sadd('subscribers', request.form['From'])
+        resp = twiml.Response()
+        resp.message("Boom! Your in!")
+        return str(resp)
+    elif request.form['Body'].lower().strip() == "stop":
+        r.srem('subscribers', request.form['From'])
+        resp = twiml.Response()
+        resp.message("Ok. Bye.")
+        return str(resp)
+    else:
+        resp = twiml.Response()
+        resp.message("I don't understand your command. Repy with the word STOP to unsubscribe.")
+        return str(resp)
 
 
 if __name__ == "__main__":
