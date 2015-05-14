@@ -24,8 +24,7 @@ client = TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN)
 
 @app.route("/")
 def home():
-    twilio_payload = r.get('twilio_payload')
-    return render_template('home.html', twilio_payload=twilio_payload)
+    return render_template('home.html')
 
 
 @app.route("/subscribe/", methods=['POST'])
@@ -51,9 +50,8 @@ def subscribe():
 
 @app.route("/message/", methods=['POST'])
 def read_message():
-    r.set('twilio_payload', pprint(request))
     resp = twiml.Response()
-    resp.message("Hello, Mobile Monkey")
+    resp.message("Hello, {}. You said \"{}\"".format(request.form['From'], request.form['Body']))
     return str(resp)
 
 
