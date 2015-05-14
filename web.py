@@ -52,7 +52,7 @@ def subscribe():
 @app.route("/message/", methods=['POST'])
 def read_message():
     r.set('twilio_payload', pprint(request))
-    resp = twilio.twiml.Response()
+    resp = twiml.Response()
     resp.message("Hello, Mobile Monkey")
     return str(resp)
 
