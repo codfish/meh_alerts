@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, flash, redirect, url_for
+from pprint import pprint
 from twilio.rest import TwilioRestClient
 from twilio import twiml
 
 import datetime
-import json
 import os
 import redis
 import requests
@@ -51,7 +51,7 @@ def subscribe():
 
 @app.route("/message/", methods=['POST'])
 def read_message():
-    r.set('twilio_payload', json.dumps(request))
+    r.set('twilio_payload', pprint(request))
     resp = twilio.twiml.Response()
     resp.message("Hello, Mobile Monkey")
     return str(resp)
