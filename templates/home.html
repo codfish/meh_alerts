@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Meh Alerts!</title>
+
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  </head>
+
+  <body>
+    <h1>Meh Alerts!</h1>
+
+    {% for message in get_flashed_messages() %}
+      <p>{{ message }}</p>
+    {% endfor %}
+
+    <form action="/subscribe/" method="POST">
+      <div class="g-recaptcha" data-sitekey="6Lf6wgYTAAAAAGko7FUG4MrUnpsA4F62-xtOi9hS"></div>
+
+      <label>Cell Phone <input type="tel" name="phone" /></label>
+
+      <button type="submit">Subscribe</button>
+    </form>
+
+    <pre>{{ twilio_payload }}</pre>
+  </body>
+</html>

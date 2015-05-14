@@ -3,15 +3,21 @@ from twilio.rest import TwilioRestClient
 
 import os
 import re
+import redis
 import requests
 import schedule
 import time
 
- 
-ACCOUNT_SID = os.environ.get('ACCOUNT_SID')
-AUTH_TOKEN = os.environ.get('AUTH_TOKEN')
-TO_NUMBER = os.environ.get('TO_NUMBER')
-FROM_NUMBER = os.environ.get('FROM_NUMBER')
+
+ACCOUNT_SID = os.environ['ACCOUNT_SID']
+AUTH_TOKEN = os.environ['AUTH_TOKEN']
+FROM_NUMBER = os.environ['FROM_NUMBER']
+
+
+r = redis.StrictRedis(
+    host=os.environ['REDIS_HOST'],
+    port=os.environ['REDIS_PORT'],
+    password=os.environ['REDIS_PASS'])
 
 
 def job():
@@ -24,12 +30,16 @@ def job():
     item_image = soup.select('#gallery .photos .photo')[0]['data-src']
 
     client = TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN)
-    client.messages.create(
-        to=TO_NUMBER,
-        from_=FROM_NUMBER,
-        body='Todays meh is "{}"'.format(item_name),
-        media_url=item_image,
-    )
+
+    subscribers = r.smembers("subscribers")
+
+    for subscriber in subscribers:
+        client.messages.create(
+            to=subscriber,
+            from_=FROM_NUMBER,
+            body='Todays meh is "{}"'.format(item_name),
+            media_url=item_image,
+        )
 
 
 schedule.every().day.at("04:00").do(job)
