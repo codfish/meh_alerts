@@ -38,7 +38,7 @@ def subscribe():
         client.messages.create(
             to=request.form['phone'],
             from_=FROM_NUMBER,
-            body='Reply with the word MEH to confirm your subscription.  You may unsubscribe at any time by replying with the word STOP.'
+            body='Reply with the word MEH to confirm your subscription.  You may unsubscribe at any time by replying with the word OUT.'
         )
 
         flash("Your almost done.  Check your phone for a message from us.")
@@ -55,14 +55,14 @@ def read_message():
         resp = twiml.Response()
         resp.message("Boom! Your in!")
         return str(resp)
-    elif request.form['Body'].lower().strip() == "stop":
+    elif request.form['Body'].lower().strip() == "out":
         r.srem('subscribers', request.form['From'])
         resp = twiml.Response()
         resp.message("Ok. Bye.")
         return str(resp)
     else:
         resp = twiml.Response()
-        resp.message("I don't understand your command. Repy with the word STOP to unsubscribe.")
+        resp.message("I don't understand your command. Repy with the word OUT to unsubscribe.")
         return str(resp)
 
 
