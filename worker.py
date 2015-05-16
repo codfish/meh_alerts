@@ -26,8 +26,11 @@ def job():
     response = requests.get('https://meh.com/')
 
     soup = BeautifulSoup(response.text)
-    item_name = re.sub(r'\s{2,}', ' ', soup.select('.features h2')[0].text.strip())
+    item_name = re.sub(r'\s{2,}', ' ', soup.select('h2')[0].text.strip())
     item_image = soup.select('#gallery .photos .photo')[0]['data-src']
+    buy_button = soup.select('.buy-button')[0]
+    buy_span = buy_button.find('span').extract()
+    item_price = buy_button.text.strip()
 
     client = TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN)
 
@@ -37,10 +40,9 @@ def job():
         client.messages.create(
             to=subscriber,
             from_=FROM_NUMBER,
-            body='Todays meh is "{}"'.format(item_name),
+            body='Todays meh is "{}" for {}'.format(item_name, item_price),
             media_url=item_image,
         )
-
 
 schedule.every().day.at("04:00").do(job)
 
