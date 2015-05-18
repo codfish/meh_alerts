@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from twilio.rest import TwilioRestClient
+from twilio.rest import TwilioRestClient, exceptions as twilio_exceptions
 
 import os
 import re
@@ -37,12 +37,15 @@ def job():
     subscribers = r.smembers("subscribers")
 
     for subscriber in subscribers:
-        client.messages.create(
-            to=subscriber,
-            from_=FROM_NUMBER,
-            body='Todays meh is "{}" for {}'.format(item_name, item_price),
-            media_url=item_image,
-        )
+        try:
+            client.messages.create(
+                to=subscriber,
+                from_=FROM_NUMBER,
+                body='Todays meh is "{}" for {}'.format(item_name, item_price),
+                media_url=item_image,
+            )
+        except twilio_exceptions.TwilioRestException:
+            print("Error sending message to {}".format(subscriber))
 
 schedule.every().day.at("04:01").do(job)
 
