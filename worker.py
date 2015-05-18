@@ -44,7 +44,7 @@ def job():
             media_url=item_image,
         )
 
-schedule.every().day.at("04:00").do(job)
+schedule.every().day.at("04:01").do(job)
 
 while True:
     schedule.run_pending()
