@@ -60,6 +60,14 @@ def read_message():
         resp = twiml.Response()
         resp.message("Ok. Bye.")
         return str(resp)
+    elif request.form['Body'].lower().strip() == "stop":
+        r.srem('subscribers', request.form['From'])
+        resp = twiml.Response()
+        return str(resp)
+    elif request.form['Body'].lower().strip() == "start":
+        r.sadd('subscribers', request.form['From'])
+        resp = twiml.Response()
+        return str(resp)
     else:
         resp = twiml.Response()
         resp.message("I don't understand your command. Repy with the word OUT to unsubscribe.")
