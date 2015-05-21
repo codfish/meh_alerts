@@ -50,21 +50,23 @@ def subscribe():
 
 @app.route("/message/", methods=['POST'])
 def read_message():
-    if request.form['Body'].lower().strip() == "meh":
+    action = request.form['Body'].lower().strip()
+
+    if action == "meh":
         r.sadd('subscribers', request.form['From'])
         resp = twiml.Response()
         resp.message("Boom! Your in!")
         return str(resp)
-    elif request.form['Body'].lower().strip() == "out":
+    elif action == "out":
         r.srem('subscribers', request.form['From'])
         resp = twiml.Response()
         resp.message("Ok. Bye.")
         return str(resp)
-    elif request.form['Body'].lower().strip() == "stop":
+    elif action == "stop":
         r.srem('subscribers', request.form['From'])
         resp = twiml.Response()
         return str(resp)
-    elif request.form['Body'].lower().strip() == "start":
+    elif action == "start":
         r.sadd('subscribers', request.form['From'])
         resp = twiml.Response()
         return str(resp)
