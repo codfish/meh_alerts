@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 from twilio.rest import TwilioRestClient, exceptions as twilio_exceptions
+from apiclient.discovery import build
 
 import os
 import re
@@ -12,6 +13,7 @@ import time
 ACCOUNT_SID = os.environ['ACCOUNT_SID']
 AUTH_TOKEN = os.environ['AUTH_TOKEN']
 FROM_NUMBER = os.environ['FROM_NUMBER']
+GOOGL_API_KEY = os.environ['GOOGL_API_KEY']
 
 
 r = redis.StrictRedis(
@@ -19,6 +21,13 @@ r = redis.StrictRedis(
     port=os.environ['REDIS_PORT'],
     password=os.environ['REDIS_PASS'])
 
+
+def url(link):
+    service = build('urlshortener', 'v1', developerKey=GOOGL_API_KEY)
+    url = service.url()
+    body = {'longUrl': link}
+    response = url.insert(body=body).execute()
+    return response['id']
 
 def job():
     print("Sending daily message...")
@@ -31,6 +40,8 @@ def job():
     buy_button = soup.select('.buy-button')[0]
     buy_span = buy_button.find('span').extract()
     item_price = buy_button.text.strip()
+    item_link = soup.select('[rel="canonical"]')[0]['href']
+    short_link = url(item_link)
 
     client = TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN)
 
@@ -41,7 +52,7 @@ def job():
             client.messages.create(
                 to=subscriber,
                 from_=FROM_NUMBER,
-                body='Todays meh is "{}" for {}'.format(item_name, item_price),
+                body='Todays meh is "{}" for {} {}'.format(item_name, item_price, short_link),
                 media_url=item_image,
             )
         except twilio_exceptions.TwilioRestException:
